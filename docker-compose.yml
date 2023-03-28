@@ -1,0 +1,96 @@
+version: "3.9"
+
+services:
+
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    expose:
+      - "6379"
+    command: redis-server --save 60 1 --loglevel warning
+
+  db:
+    container_name: db
+    image: postgres:alpine
+    volumes:
+      - ./postgre/data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    env_file:
+      - ./envs/dev/postgre/.env
+
+    restart: always
+
+  backend:
+    build:
+      context: .
+      dockerfile: dockerfiles/dev/django/Dockerfile
+    container_name: backend
+    command: sh -c "python manage.py check_database && \ 
+                    yes | python manage.py makemigrations  && \
+                    yes | python manage.py migrate  && \
+                    python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./core:/usr/src/app
+    ports:
+      - 8000:8000
+    env_file:
+      - ./envs/dev/django/.env
+    restart: always
+    depends_on:
+      - db
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: dockerfiles/dev/django/Dockerfile
+    command: celery -A core worker --loglevel=info
+    container_name: weather-celery_worker
+    volumes:
+      - ./core:/usr/src/app
+    env_file:
+      - ./envs/dev/django/.env
+    restart: always
+    depends_on:
+      - redis
+      - db
+      - backend
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: dockerfiles/dev/django/Dockerfile
+    command: celery -A core beat -l info
+    container_name: weather-celery_beat
+    volumes:
+      - ./core:/usr/src/app
+    env_file:
+      - ./envs/dev/django/.env
+
+    restart: always
+    depends_on:
+      - redis
+      - db
+      - backend
+
+
+
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    restart: always
+    ports:
+      # Change the number before : to the port the web interface should be accessible on
+      - '5000:80'
+      # Change the number before : to the port the SMTP server should be accessible on
+      - '25:25'
+      # Change the number before : to the port the IMAP server should be accessible on
+      - '143:143'
+    volumes:
+      # This is where smtp4dev stores the database..
+      - smtp4dev-data:/smtp4dev
+    environment:
+      - ServerOptions__HostName=smtp4dev
+
+volumes:
+  smtp4dev-data:
