@@ -2,7 +2,10 @@
 stages: 
   - test
   - build
-  - deploy 
+  - deploy-backend 
+  - deploy-worker 
+  - deploy-beater
+
 
 # testing stage
 Test:
@@ -45,7 +48,7 @@ Test:
     POSTGRES_PASSWORD: postgres
 
 # building stage
-darkube_build:
+build:
   
   # name of the stage 
   stage: build
@@ -56,7 +59,7 @@ darkube_build:
   # only doing the job in prod mode
   only:
     refs:
-    - stage
+    - prod
 
   # defining specific runners
   # tags:
@@ -69,12 +72,11 @@ darkube_build:
     . --file ./dockerfiles/prod/django/Dockerfile --build-context . '
 
   
-
-# deployment stage
-darkube_deploy:
   
+# backend deployment stage 
+darkube_deploy_backend:
   # name of the stage 
-  stage: deploy
+  stage: deploy-backend 
 
   # using darkube image cli
   image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
@@ -88,10 +90,63 @@ darkube_deploy:
   # tags:
   #   - my-runner
 
-  # running deploy script for the project
-  # name of the predefined env variables: https://github.com/gitlabhq/gitlabhq/blob/master/doc/ci/variables/predefined_variables.md
+
+  # deploy token variable: DARKUBE_DEPLOY_TOKEN_BACKEND
+  # app id variable: DARKUBE_APP_ID_BACKEND
   script:
-  - darkube deploy --ref prod --token ${DARKUBE_DEPLOY_TOKEN} --app-id
-    ${DARKUBE_APP_ID}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
+  - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_BACKEND} --app-id
+    ${DARKUBE_APP_ID_BACKEND}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
+    "${CI_JOB_ID}" --stateless-app true
+
+
+
+darkube_deploy_worker:
+  # name of the stage 
+  stage: deploy-worker
+
+  # using darkube image cli
+  image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
+  
+  # only doing the job in prod mode
+  only:
+    refs:
+    - prod
+  
+  # defining specific runners
+  # tags:
+  #   - my-runner
+
+  # deploy token variable: DARKUBE_DEPLOY_TOKEN_WORKER
+  # app id variable: DARKUBE_APP_ID_WORKER
+  script:
+  - export IMAGE="registry.hamdocker.ir/sama/weather"
+  - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_WORKER} --app-id
+    ${DARKUBE_APP_ID_WORKER}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
+    "${CI_JOB_ID}" --stateless-app true
+  
+
+
+darkube_deploy_beater:
+  # name of the stage 
+  stage: deploy-beater
+
+  # using darkube image cli
+  image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
+  
+  # only doing the job in prod mode
+  only:
+    refs:
+    - prod
+  
+  # defining specific runners
+  # tags:
+  #   - my-runner
+
+  # deploy token variable: DARKUBE_DEPLOY_TOKEN_BEATER
+  # app id variable: DARKUBE_APP_ID_BEATER
+  script:
+  - export IMAGE="registry.hamdocker.ir/sama/weather"
+  - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_BEATER} --app-id
+    ${DARKUBE_APP_ID_BEATER}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
     "${CI_JOB_ID}" --stateless-app true
   
