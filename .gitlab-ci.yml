@@ -99,7 +99,7 @@ darkube_deploy_backend:
     "${CI_JOB_ID}" --stateless-app true
 
 
-
+# worker deployment stage 
 darkube_deploy_worker:
   # name of the stage 
   stage: deploy-worker
@@ -125,7 +125,7 @@ darkube_deploy_worker:
     "${CI_JOB_ID}" --stateless-app true
   
 
-
+# beater deployment stage 
 darkube_deploy_beater:
   # name of the stage 
   stage: deploy-beater
