@@ -36,11 +36,6 @@
   - [Github CICD](#github-cicd)
   - [Gitlab/Hamgit CICD](#gitlabhamgit-cicd)
 - [Sentry Logger](#sentry-logger)
-  - [0- Create an account](#0--create-an-account-1)
-  - [1- Create Project](#1--create-project)
-  - [2- Implement configs](#2--implement-configs)
-  - [3- Throw an Error](#3--throw-an-error)
-  - [4- Test logging mechanism](#4--test-logging-mechanism)
 - [License](#license)
 - [Bugs](#bugs)
 
@@ -73,6 +68,27 @@ enviroment varibales are included in docker-compose.yml file for debugging mode 
 
 ```yaml
 services:
+
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    expose:
+      - "6379"
+    command: redis-server --save 60 1 --loglevel warning
+
+  db:
+    container_name: db
+    image: postgres:alpine
+    volumes:
+      - ./postgre/data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    env_file:
+      - ./envs/dev/postgre/.env
+
+    restart: always
+
   backend:
     build:
       context: .
@@ -91,6 +107,11 @@ services:
     restart: always
     depends_on:
       - db
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   celery_worker:
     build:
@@ -124,6 +145,8 @@ services:
       - redis
       - db
       - backend
+
+
 
 ```
 
@@ -244,76 +267,9 @@ On top of the page you can find the credentials for registry that you need.
 after that if everything goes well you can see that the jobs are working.
 
 # Sentry Logger
-if you need to use sentry logging as a logger for your project all you need to do is to have an account and do modifications in environments cause i have already added the scripts that you need.
+for this section please follow the instructions for General Deployment of hamravesh projects provided here:
 
-## 0- Create an account
-first of all head to the link below and follow instructions to create an account. until you see the dashboard.
-<https://sentry.hamravesh.com/>
-<div align="center" ><img loading="lazy" style="width:700px" src="./docs/sentry-dashboard-step-0.png"></div>
-
-## 1- Create Project
-Now in order to connect your django application to the sentry you have to create a project. so click on creating project and then choose django as your project base, in Setup your default alert settings you can create the alerts you need or you can do it later, and at the end of config just choose a name and select a team and hit Create Project when your done.
-<div align="center" ><img loading="lazy" style="width:700px" src="./docs/sentry-dashboard-step-1.png"></div>
-
-## 2- Implement configs
-for ease of use i have already added the scripts plus the requirements that you need for your project as below:
-
-- requirements.txt
-  ```bash
-  ...
-  sentry-sdk
-  ```
-- core/core/settings.py
-  ```python
-  SENTRY_ENABLE = config("SENTRY_ENABLE", cast=bool, default=False)
-  if SENTRY_ENABLE:
-    SENTRY_DNS = config("SENTRY_DNS")
-    import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
-
-    sentry_sdk.init(
-        dsn=SENTRY_DNS,
-        integrations=[
-            DjangoIntegration(),
-        ],
-
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production.
-        traces_sample_rate=1.0,
-
-        # If you wish to associate users to errors (assuming you are using
-        # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True
-    )
-  ```
-- envs/prod/django/.env.sample
-  ```properties
-  SENTRY_ENABLE=True
-  SENTRY_DNS=https://xxxx@sentry.hamravesh.com/xxx
-  ```
-as you can see all you have to do is to enable the sentry with putting env in ```True``` and replace the ```dns``` with the correct url.
-
-## 3- Throw an Error
-for testing purposes i already had put a url inside project to create an error to log it inside the sentry for checking the configuration you can uncomment it again after test.
-
-- core/core/urls.py
-  ```python
-  from django.urls import path
-
-  def trigger_error(request):
-      division_by_zero = 1 / 0
-
-  urlpatterns = [
-      path('sentry-debug/', trigger_error),
-      # ...
-  ]
-  ```
-## 4- Test logging mechanism
-now just head to the url that we have as ```https://app_name.darkube.app/sentry-debug/``` nd create a purposely error. then inside the project page you can see the log of error which happened in your project to get a 500 error.
-<div align="center" ><img loading="lazy" style="width:700px" src="./docs/sentry-dashboard-step-4-1.png"></div>
-then head to the dashboard and inside project page you can see an issue
-<div align="center" ><img loading="lazy" style="width:700px" src="./docs/sentry-dashboard-step-4-2.png"></div>
+<https://github.com/AliBigdeli/Django-Hamravesh-Docker-Template#sentry-logger>
 
 # License
 MIT.
