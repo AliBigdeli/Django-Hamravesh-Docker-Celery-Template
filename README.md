@@ -35,6 +35,8 @@
 - [CICD Deployment](#cicd-deployment)
   - [Github CICD](#github-cicd)
   - [Gitlab/Hamgit CICD](#gitlabhamgit-cicd)
+    - [Setup Worker and Beater](#setup-worker-and-beater)
+    - [Setup Environments](#setup-environments)
 - [Sentry Logger](#sentry-logger)
 - [License](#license)
 - [Bugs](#bugs)
@@ -222,10 +224,44 @@ for this section please follow the instructions for General Deployment of hamrav
 <https://github.com/AliBigdeli/Django-Hamravesh-Docker-Template#3--setup-django-app>
 
 ## 4- Setup Worker
-follow the provided steps to finish this section.
+Just Like what you have done in ```setup django app``` section you will do everything the same except that for configuration of the app there will be some minor changes 
+1 - Create the app based on repo and proceed to the general info section, and put these info:
+```properties
+app_name: my-site-worker # name of the app which is going to be called inside the portal
+service_port:  # leave this field as empty cause our service wont have outer access
+execute_command: celery -A core worker --loglevel=info
+```
+2- Environments:
+just as usual put all the environments that your project needs
+
+3- Domains:
+in this section dont add anything cause we are not going to use the app through the web, instead it will be called through the signals between apps and broker.
+
+4- plan:
+choose the correct plan for using the app, note that sometimes your app might go through loops cause of limited sources so that you need to upgrade the plan to find the better performance for that.
+
+5- Deploy:
+Lastly wait till the app is up and running correctly.
 
 ## 5- Setup Beater
-follow the provided steps to finish this section.
+Just Like what you have done in ```setup django app``` section you will do everything the same except that for configuration of the app there will be some minor changes 
+1 - Create the app based on repo and proceed to the general info section, and put these info:
+```properties
+app_name: my-site-worker # name of the app which is going to be called inside the portal
+service_port:  # leave this field as empty cause our service wont have outer access
+execute_command: celery -A core beat -l info
+```
+2- Environments:
+just as usual put all the environments that your project needs
+
+3- Domains:
+in this section dont add anything cause we are not going to use the app through the web, instead it will be called through the signals between apps and broker.
+
+4- plan:
+choose the correct plan for using the app, note that sometimes your app might go through loops cause of limited sources so that you need to upgrade the plan to find the better performance for that.
+
+5- Deploy:
+Lastly wait till the app is up and running correctly.
 
 # CICD Deployment
 For the sake of continuous integration and deployment i have provided two samples for github and gitlab/hamgit for you.
@@ -235,28 +271,45 @@ but there will be some configurations to be added for building and deploying pur
 will be provided soon
 
 ## Gitlab/Hamgit CICD
+
+### Setup Worker and Beater
+before going to configure cicd there is a little change that you need to make in the worker and beater configs in hamravesh panel, the docker image of each app should be pointed to backend image inorder for cicd to work correctly. in order to that just follow the instructions bellow:
+
+1- go to the backend app page, click on ```edit``` in ```image docker section```, then copy the provided link something like: ```registry.hamdocker.ir/bigdeliali3/my-site```
+<div align="center" ><img loading="lazy" style="width:700px" src="./docs/hamravesh-docker-image.png"></div>
+
+2- then go to the woker app page, again click on ```edit``` in ```image docker section``` , replace the link with the copied link from backend app.
+3- then go to the beater app page, again click on ```edit``` in ```image docker section``` , replace the link with the copied link from backend app.
+
+and now your good to go. 
+
+### Setup Environments
 in order to do ci/cd in the sample project for gitlab/hamgit you have to create a duplicate of the ```.gitlab-ci.yml.sample``` but with different name as ```.gitlab-ci.yml``` in the root directory.
 
 after that our pipeline will be always listening to the prod branch. if you commit in this branch it will go through the process.
 
-
 note that you have to declare 5 or more environment variables in your gitlab/hamgit project repo, which you can add it by going to ```Settings>CI/CD>Variables```, and in this section try to add all the needed variables.
+
 
 <div align="center" ><img loading="lazy" style="width:700px" src="./docs/gitlab-envs.png"></div>
 
 these variables should be included:
-- DARKUBE_APP_ID - ``` which can be found in app info page ```
-- DARKUBE_DEPLOY_TOKEN - ``` which can be found in app info page ```
+- DARKUBE_APP_ID_BACKEND - ``` which can be found in app info page of the backend project```
+- DARKUBE_DEPLOY_TOKEN_BACKEND - ``` which can be found in app info page of the backend project ```
+- DARKUBE_APP_ID_WORKER - ``` which can be found in app info page of the worker project```
+- DARKUBE_DEPLOY_TOKEN_WORKER - ``` which can be found in app info page of the worker project ```
+- DARKUBE_APP_ID_BEATER - ``` which can be found in app info page of the beater project```
+- DARKUBE_DEPLOY_TOKEN_BEATER - ``` which can be found in app info page of the beater project ```
 - IMAGE -  ``` registry.hamdocker.ir/<USERNAME>/<APPNAME> ```
 - REGISTERY - ``` registry.hamdocker.ir/<USERNAME> ```
 - REGISTERY_PASSWORD - ``` registry password ```
 - REGISTERY_USER - ``` username like 'bigdeliali3' ```
 
 
-for having ```DARKUBE_APP_ID``` and ```DARKUB_DEPLOY_TOKEN``` head to the app page and use the following parameters in the picture.
+for having ```DARKUBE_APP_ID_xxxxx``` and ```DARKUB_DEPLOY_TOKEN_xxxxx``` head to the app page and use the following parameters in the picture.
 
 <div align="center" ><img loading="lazy" style="width:700px" src="./docs/hamravesh-app-info.png"></div>
- 
+  
 for having ```REGISTRY``` and ```REGISTRY_USER``` and ```REGISTRY_PASSWORD``` head to the app page and use the following parameters in the picture.
 REGISTRY will be the url like this: ```registry.hamdocker.ir/<USERNAME>```
 and for getting the username and passwords just go to the app section and click on docker image. you will see something like this, after that click on registries.

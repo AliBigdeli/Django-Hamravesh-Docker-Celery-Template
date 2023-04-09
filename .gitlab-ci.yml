@@ -119,7 +119,6 @@ darkube_deploy_worker:
   # deploy token variable: DARKUBE_DEPLOY_TOKEN_WORKER
   # app id variable: DARKUBE_APP_ID_WORKER
   script:
-  - export IMAGE="registry.hamdocker.ir/sama/weather"
   - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_WORKER} --app-id
     ${DARKUBE_APP_ID_WORKER}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
     "${CI_JOB_ID}" --stateless-app true
@@ -145,7 +144,6 @@ darkube_deploy_beater:
   # deploy token variable: DARKUBE_DEPLOY_TOKEN_BEATER
   # app id variable: DARKUBE_APP_ID_BEATER
   script:
-  - export IMAGE="registry.hamdocker.ir/sama/weather"
   - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_BEATER} --app-id
     ${DARKUBE_APP_ID_BEATER}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
     "${CI_JOB_ID}" --stateless-app true
