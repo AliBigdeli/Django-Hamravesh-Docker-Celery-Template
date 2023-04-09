@@ -273,13 +273,13 @@ will be provided soon
 ## Gitlab/Hamgit CICD
 
 ### Setup Worker and Beater
-before going to configure cicd there is a little change that you need to make in the worker and beater configs in hamravesh panel, the docker image of each app should be pointed to backend image inorder for cicd to work correctly. in order to that just follow the instructions bellow:
+before going to configure cicd there is a little change that you need to make in the worker and beater configs in hamravesh panel, the docker image and tag of each app should be pointed to backend image and tag in order for cicd to work correctly. in order to do that just follow the instructions bellow:
 
-1- go to the backend app page, click on ```edit``` in ```image docker section```, then copy the provided link something like: ```registry.hamdocker.ir/bigdeliali3/my-site```
+1- go to the backend app page, click on ```edit``` in ```image docker section```, then copy the provided link and tag something like: ```registry.hamdocker.ir/bigdeliali3/my-site``` and tag as in "prod" (which will be set when you go though cicd cycle but will be as prod forever)
 <div align="center" ><img loading="lazy" style="width:700px" src="./docs/hamravesh-docker-image.png"></div>
 
-2- then go to the woker app page, again click on ```edit``` in ```image docker section``` , replace the link with the copied link from backend app.
-3- then go to the beater app page, again click on ```edit``` in ```image docker section``` , replace the link with the copied link from backend app.
+2- then go to the woker app page, again click on ```edit``` in ```image docker section``` , replace the link and tag with the copied info from backend app.
+3- then go to the beater app page, again click on ```edit``` in ```image docker section``` , replace the link and tag with the copied info from backend app.
 
 and now your good to go. 
 

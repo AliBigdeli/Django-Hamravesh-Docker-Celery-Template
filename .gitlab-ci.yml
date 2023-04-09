@@ -95,7 +95,7 @@ darkube_deploy_backend:
   # app id variable: DARKUBE_APP_ID_BACKEND
   script:
   - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_BACKEND} --app-id
-    ${DARKUBE_APP_ID_BACKEND}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
+    ${DARKUBE_APP_ID_BACKEND}  --image-tag "prod" --job-id
     "${CI_JOB_ID}" --stateless-app true
 
 
@@ -120,7 +120,7 @@ darkube_deploy_worker:
   # app id variable: DARKUBE_APP_ID_WORKER
   script:
   - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_WORKER} --app-id
-    ${DARKUBE_APP_ID_WORKER}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
+    ${DARKUBE_APP_ID_WORKER}  --image-tag "prod" --job-id
     "${CI_JOB_ID}" --stateless-app true
   
 
@@ -145,6 +145,6 @@ darkube_deploy_beater:
   # app id variable: DARKUBE_APP_ID_BEATER
   script:
   - darkube deploy --ref stage --token ${DARKUBE_DEPLOY_TOKEN_BEATER} --app-id
-    ${DARKUBE_APP_ID_BEATER}  --image-tag "${CI_COMMIT_SHORT_SHA}" --job-id
+    ${DARKUBE_APP_ID_BEATER}  --image-tag "prod" --job-id
     "${CI_JOB_ID}" --stateless-app true
   
