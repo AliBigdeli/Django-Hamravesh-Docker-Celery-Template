@@ -191,10 +191,13 @@ for this section please follow the instructions for General Deployment of hamrav
 <https://github.com/AliBigdeli/Django-Hamravesh-Docker-Template#0--create-an-account>
 
 
-## 1- Setup database
+## 1- Setup database (postgre and redis)
 for this section please follow the instructions for General Deployment of hamravesh projects provided here:
 
 <https://github.com/AliBigdeli/Django-Hamravesh-Docker-Template#2--setup-database>
+
+**Note:** createing redis app is as easy as selecting the app and plan to be created. then just store the host,port,password and set it in django environment in order to use it.
+
 
 ## 2- Create a repo app
 in order to deploy your project you can use repo mode (or منبع گیت) after clicking on the item. you will see a panel like this below:
