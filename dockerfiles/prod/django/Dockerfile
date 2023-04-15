@@ -13,9 +13,8 @@ RUN apk add --update --virtual .build-deps \
 
 
 # install dependencies
-RUN pip install --upgrade pip
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 
 # set work directory
