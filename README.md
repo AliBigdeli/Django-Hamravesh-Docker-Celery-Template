@@ -27,7 +27,7 @@
   - [running all tests](#running-all-tests)
 - [Hamravesh deployment](#hamravesh-deployment)
   - [0- Create an account](#0--create-an-account)
-  - [1- Setup database](#1--setup-database)
+  - [1- Setup database (postgre and redis)](#1--setup-database-postgre-and-redis)
   - [2- Create a repo app](#2--create-a-repo-app)
   - [3- Setup django app (Backend)](#3--setup-django-app-backend)
   - [4- Setup Worker](#4--setup-worker)
@@ -250,7 +250,7 @@ Lastly wait till the app is up and running correctly.
 Just Like what you have done in ```setup django app``` section you will do everything the same except that for configuration of the app there will be some minor changes 
 1 - Create the app based on repo and proceed to the general info section, and put these info:
 ```properties
-app_name: my-site-worker # name of the app which is going to be called inside the portal
+app_name: my-site-beat # name of the app which is going to be called inside the portal
 service_port:  # leave this field as empty cause our service wont have outer access
 execute_command: celery -A core beat -l info
 ```
