@@ -1,15 +1,8 @@
 # pull official base image
-FROM python:3.9-alpine
+FROM python:3.10-slim-buster
 
 # maintainers info
 LABEL maintainer="bigdeli.ali3@gmail.com"
-
-# installing dependencies
-RUN apk add --update --virtual .build-deps \
-    build-base \
-    postgresql-dev \
-    python3-dev \
-    libpq
 
 
 # install dependencies
